@@ -21,4 +21,4 @@
  - All ideas are good ideas!
  
  3
- - Computer programming is a reward for good behaviour
+ - Computer programming is a priviledge
