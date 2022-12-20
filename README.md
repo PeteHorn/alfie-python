@@ -6,10 +6,11 @@
   - add in track
   - every lap, new obstacle appears
   - every lap, new shortcut appears
-- cars racing around a pitch with a football trying to score
+- car football game
   - nobody is allowed to drive into the goal then hack the ball into them
-  -  every time a goal is scored a new obstacle appears
+  - every time a goal is scored a new obstacle appears
   - every time a goal is scored, players move to a new position
+  - every time a someone gets a goal another net appears around the pitch
 
 ## Computer programming rules
 
