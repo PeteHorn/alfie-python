@@ -7,12 +7,14 @@
   - every lap, new obstacle appears
   - every lap, new shortcut appears
 - car football game
-  - nobody is allowed to drive into the goal then hack the ball into them
-  - every time a goal is scored a new obstacle appears
-  - every time a goal is scored, players move to a new position
-  - every time a someone gets a goal another net appears around the pitch
-  - goals can only be scored from 300 metres away
-  - pitch is 3000 metres long
+  - rules
+    - nobody is allowed to drive into the goal then hack the ball into them
+    - every time a goal is scored a new obstacle appears
+    - every time a goal is scored, players move to a new position
+    - every time a someone gets a goal another net appears around the pitch
+    - goals can only be scored from 300 metres away
+  - properties
+    - pitch is 3000 metres long
 
 ## Computer programming rules
 
