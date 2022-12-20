@@ -11,7 +11,8 @@
   - every time a goal is scored a new obstacle appears
   - every time a goal is scored, players move to a new position
   - every time a someone gets a goal another net appears around the pitch
-
+ - goals can only be scored from 300 metres away
+- pitch is 3000 metres long
 ## Computer programming rules
 
  1 
