@@ -38,7 +38,7 @@ def update():
   if obstacles_timeout > 100:
     scale = random.random()
     actor = Actor('tree1')
-    actor.scale = 0.15 +(scale * 2)
+    actor.scale = 0.15 +(scale * 0.2)
     actor.x = 1250
     actor.y = ground
     obstacles.append(actor)
