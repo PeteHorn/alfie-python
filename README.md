@@ -15,6 +15,7 @@
     - goals can only be scored from 300 metres away
   - properties
     - pitch is 3000 metres long
+    - players can customise there car
 
 ## Computer programming rules
 
