@@ -12,16 +12,24 @@ runner = Actor('run1')
 run_images = ['run1', 'run2', 'run3', 'run4', 'run5', 'run6', 'run7', 'run8']
 runner.images = run_images
 runner.scale = 0.5
-slime = Actor('slime')
-slime_images = ['slime', 'slimeblue', 'slimegreen']
+walker = Actor('walk1')
+walker.x = 1100
+walker.y = 500
+walk_images = ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8', 'walk9', 'walk10']
+walker.images = walk_images
+walker.scale = 0.5
+slime = Actor('slime1')
+slime_images = ['slime1', 'slime2', 'slime3']
 slime.images = slime_images
 movestep = 10
 rocks = []
 cactuses = []
 game_over = False
+walker_count = 0
+score = 0
 
 def draw():
-    global rock_points, cactus_points, rocks, cactuses, game_over
+    global rock_points, cactus_points, rocks, cactuses, game_over, score
     if game_over:
         screen.draw.text('Game Over', centerx=400, centery=270, color=(255,255,255), fontsize=60)
     else:
@@ -31,27 +39,53 @@ def draw():
         cactuses = draw_object(cactus_points, CACTUS_IMG)
         slime.draw()
         runner.draw()
+        walker.draw()
+        screen.draw.text('Score: ' + str(score), (15,10), color=(35,222,213), fontsize=50)
 
 def update():
-    global game_over, rocks, cactuses
+    global game_over, rocks, cactuses, walker_count, score
+    if walker_count == 5:
+        walker_count = 0
+        walker.next_image()
+    else:
+        walker_count += 1
     runner.next_image()
     if keyboard.up:
-        runner.y -= movestep
+        move('y', detect_object([rocks, cactuses]))
     if keyboard.down:
-        runner.y += movestep
+        move('y', not detect_object([rocks, cactuses]))
     if keyboard.left:
-        runner.x -= movestep
+        move('x', detect_object([rocks, cactuses]))
     if keyboard.right:
-        runner.x += movestep
+        move('x', not detect_object([rocks, cactuses]))
     
     if runner.collidelist([slime]) != -1:
         slime.next_image()
         new_coords = plot_object(1)[0]
         slime.x = new_coords['x']
         slime.y = new_coords['y']
+        score += 1
 
-    if runner.collidelist(rocks) != -1 or runner.collidelist(cactuses) != -1:
+    if runner.collidelist([walker]) != -1:
         game_over = True
+
+def move(axis, inc):
+    if inc:
+        movemotion = movestep
+    else:
+        movemotion = -movestep * 3
+    if axis == 'x':
+        runner.x += movemotion
+    elif axis == 'y':
+        runner.y += movemotion
+
+
+def detect_object(objects):
+    obstacledetected = False
+    for obstacle in objects:
+        if runner.collidelist(obstacle) !=-1:
+            obstacledetected = True
+    return obstacledetected
 
 def draw_object(coordinate_array, obstacle):
     obstacle_array = []
