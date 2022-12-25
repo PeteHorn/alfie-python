@@ -97,7 +97,7 @@ def move_zombie(zombie:Actor, direction):
         zombie.y = currentlocation['y']
         pos_directions = ['up', 'down', 'left', 'right']
         pos_directions.remove(direction)
-        direction = pos_directions[randrange(0, 2, 1)]
+        direction = pos_directions[randrange(1, 3, 1)]
     return direction
 
 def keyboard_actions(actor:Actor, objects):
