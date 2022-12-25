@@ -25,12 +25,12 @@ directions = []
 boundary = []
 game_over = False
 walker_count = 0
-score = -1
+score = 0
 OOB_square = 200
-add_walker = 0
+updatecount = 0
 
 def draw():
-    global rock_points, cactus_points, rocks, cactuses, game_over, score, walkers, perimeter, boundary
+    global rock_points, cactus_points, slime_point, rocks, cactuses, game_over, score, walkers, perimeter, boundary
     if game_over:
         screen.draw.text('Game Over', centerx=400, centery=270, color=(255,255,255), fontsize=60)
     else:
@@ -46,7 +46,8 @@ def draw():
         screen.draw.text('Score: ' + str(score), (15,10), color=(35,222,213), fontsize=50)
 
 def update():
-    global game_over, rocks, cactuses, walker_count, score, walkers, add_walker, directions
+    global game_over, rocks, cactuses, walker_count, score, walkers, directions, updatecount
+    updatecount += 1
     if walker_count == 5:
         walker_count = 0
         for walker in walkers:
@@ -55,18 +56,18 @@ def update():
         walker_count += 1
     keyboard_actions(runner, [rocks, cactuses])
     
-    if runner.collidelist([slime]) != -1:
+    if runner.collidelist([slime]) != -1 or updatecount % 500 == 0:
         slime.next_image()
         new_coords = new_item_plot()
         slime.x = new_coords['x']
         slime.y = new_coords['y']
-        score += 1
-        add_walker += 1
-        if add_walker == 10:
+        if updatecount % 500 != 0:
+            score += 1
+        if score % 3 == 0:
             zombie, direction = new_walker()
             walkers.append(zombie)
             directions.append(direction)
-            add_walker = 0
+        updatecount = 0
     
     for i, walker in enumerate(walkers):
         if directions:
@@ -87,8 +88,10 @@ def move_zombie(zombie:Actor, direction):
         zombie.y += 1
     elif direction == 'right':
         zombie.x += 1
+        zombie.flip_x = False
     elif direction == 'left':
         zombie.x -= 1
+        zombie.flip_x = True
     if detect_object(zombie, [rocks, cactuses, boundary]):
         zombie.x = currentlocation['x']
         zombie.y = currentlocation['y']
@@ -97,15 +100,17 @@ def move_zombie(zombie:Actor, direction):
         direction = pos_directions[randrange(0, 2, 1)]
     return direction
 
-def keyboard_actions(actor, objects):
+def keyboard_actions(actor:Actor, objects):
     if keyboard.up:
         move(actor, 'y', detect_object(actor, objects))
     if keyboard.down:
         move(actor, 'y', not detect_object(actor, objects))
     if keyboard.left:
         move(actor, 'x', detect_object(actor, objects))
+        actor.flip_x = True
     if keyboard.right:
         move(actor, 'x', not detect_object(actor, objects))
+        actor.flip_x = False
     if keyboard.up or keyboard.down or keyboard.left or keyboard.right:
         actor.next_image()
 
@@ -150,6 +155,8 @@ def draw_object(coordinate_array, obstacle):
         actor = Actor(obstacle)
         actor.x = point['x']
         actor.y = point['y']
+        if 'angle' in point:
+            actor.angle = point['angle']
         actor.draw()
         obstacle_array.append(actor)
     return obstacle_array
@@ -175,7 +182,8 @@ def create_perimeter():
     for x in range(20):
         coords = {
             'x': x * 60,
-            'y': 0
+            'y': 0,
+            'angle': 180
         }
         perimeter.append(coords)
     for x in range(20):
@@ -187,16 +195,17 @@ def create_perimeter():
     for y in range(15):
         coords = {
             'x': 0,
-            'y': y * 40
+            'y': y * 40,
+            'angle': 270
         }
         perimeter.append(coords)
     for y in range(15):
         coords = {
             'x': WIDTH - 1,
-            'y': y * 40
+            'y': y * 40,
+            'angle': 90
         }
         perimeter.append(coords)
-    print(perimeter)
     return perimeter
 
 def new_item_plot():
@@ -212,6 +221,8 @@ def new_item_plot():
     
 perimeter = create_perimeter()
 slime_point = new_item_plot()
+slime.x = slime_point['x']
+slime.y = slime_point['y']
 rock_points = plot_object(10)
 cactus_points = plot_object(10)
 zombie, direction = new_walker()
