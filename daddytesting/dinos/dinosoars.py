@@ -9,6 +9,8 @@ BACKGROUND_IMG = 'sand.png'
 ROCK_IMG = 'rock.png'
 CACTUS_IMG = 'cactus.png'
 runner = Actor('run1')
+runner.x = 100
+runner.y = 100
 run_images = ['run1', 'run2', 'run3', 'run4', 'run5', 'run6', 'run7', 'run8']
 runner.images = run_images
 runner.scale = 0.5
@@ -20,6 +22,7 @@ rocks = []
 cactuses = []
 walkers = []
 directions = []
+boundary = []
 game_over = False
 walker_count = 0
 score = -1
@@ -27,7 +30,7 @@ OOB_square = 200
 add_walker = 0
 
 def draw():
-    global rock_points, cactus_points, rocks, cactuses, game_over, score, walkers, perimeter
+    global rock_points, cactus_points, rocks, cactuses, game_over, score, walkers, perimeter, boundary
     if game_over:
         screen.draw.text('Game Over', centerx=400, centery=270, color=(255,255,255), fontsize=60)
     else:
@@ -50,12 +53,11 @@ def update():
             walker.next_image()
     else:
         walker_count += 1
-    runner.next_image()
     keyboard_actions(runner, [rocks, cactuses])
     
     if runner.collidelist([slime]) != -1:
         slime.next_image()
-        new_coords = plot_object(1)[0]
+        new_coords = new_item_plot()
         slime.x = new_coords['x']
         slime.y = new_coords['y']
         score += 1
@@ -64,6 +66,7 @@ def update():
             zombie, direction = new_walker()
             walkers.append(zombie)
             directions.append(direction)
+            add_walker = 0
     
     for i, walker in enumerate(walkers):
         if directions:
@@ -73,7 +76,11 @@ def update():
         game_over = True
 
 def move_zombie(zombie:Actor, direction):
-    global rocks, cactuses
+    global rocks, cactuses, boundary
+    currentlocation = {
+        'x': zombie.x,
+        'y': zombie.y
+    }
     if direction == 'up':
         zombie.y -= 1
     elif direction == 'down':
@@ -82,7 +89,9 @@ def move_zombie(zombie:Actor, direction):
         zombie.x += 1
     elif direction == 'left':
         zombie.x -= 1
-    if detect_object(zombie, [rocks, cactuses]):
+    if detect_object(zombie, [rocks, cactuses, boundary]):
+        zombie.x = currentlocation['x']
+        zombie.y = currentlocation['y']
         pos_directions = ['up', 'down', 'left', 'right']
         pos_directions.remove(direction)
         direction = pos_directions[randrange(0, 2, 1)]
@@ -97,8 +106,15 @@ def keyboard_actions(actor, objects):
         move(actor, 'x', detect_object(actor, objects))
     if keyboard.right:
         move(actor, 'x', not detect_object(actor, objects))
+    if keyboard.up or keyboard.down or keyboard.left or keyboard.right:
+        actor.next_image()
 
 def move(actor:Actor, axis, inc):
+    global rocks, cactuses, boundary
+    currentlocation = {
+        'x': actor.x,
+        'y': actor.y
+    }
     if inc:
         movemotion = movestep
     else:
@@ -107,11 +123,15 @@ def move(actor:Actor, axis, inc):
         actor.x += movemotion
     elif axis == 'y':
         actor.y += movemotion
+    if detect_object(actor, [rocks, cactuses, boundary]):
+        actor.x = currentlocation['x']
+        actor.y = currentlocation['y']
 
 def new_walker():
     walker = Actor('walk1')
-    walker.x = 1100
-    walker.y = 500
+    coords = new_item_plot()
+    walker.x = coords['x']
+    walker.y = coords['y']
     walk_images = ['walk1', 'walk2', 'walk3', 'walk4', 'walk5', 'walk6', 'walk7', 'walk8', 'walk9', 'walk10']
     walker.images = walk_images
     walker.scale = 0.5
@@ -178,9 +198,20 @@ def create_perimeter():
         perimeter.append(coords)
     print(perimeter)
     return perimeter
+
+def new_item_plot():
+    minx = 50
+    xrange = 1100
+    miny = 50
+    yrange = 500
+    coords = {
+            'x': minx + (random() * xrange),
+            'y': miny + (random() * yrange)
+        }
+    return coords
     
 perimeter = create_perimeter()
-slime_point = plot_object(1)
+slime_point = new_item_plot()
 rock_points = plot_object(10)
 cactus_points = plot_object(10)
 zombie, direction = new_walker()
