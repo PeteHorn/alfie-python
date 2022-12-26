@@ -39,7 +39,6 @@ def move_baddies():
                 if baddie.x < 100:
                     direction = 'r'
                     move_down = True
-        print(f'x = {baddie.x}, y = {baddie.y}. dir = {direction}')
     return direction
 
 def new_baddie(x, y):
