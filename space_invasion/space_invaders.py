@@ -14,27 +14,33 @@ def draw():
         baddie.draw()
 
 def update():
-    global direction
-    direction = move_baddies(direction)
+    global direction, timer
+    timer += 1
+    if timer % 30 == 0:
+        direction = move_baddies()
 
-def move_baddies(direction):
-    global baddies
+def move_baddies():
+    global baddies, direction, move_down
     movestep = baddie_spacing / 2
-    for baddie in baddies:
-        if direction == 'r':
-            baddie.x += movestep
-            if baddie.x > 924:
-                direction = 'dl'
-        elif direction == 'l':
-            baddie.x -= movestep
-            if baddie.x < 100:
-                direction = 'dr'
-        elif direction == 'dl':
+    move_dir = direction
+    if move_down:
+        for baddie in baddies:
             baddie.y += movestep
-            direction == 'l'
-        elif direction == 'dr':
-            baddie.y += movestep
-            direction = 'r'
+        move_down = False
+    else:
+        for baddie in baddies:
+            if move_dir == 'r':
+                baddie.x += movestep
+                if baddie.x > 924:
+                    direction = 'l'
+                    move_down = True
+            elif move_dir == 'l':
+                baddie.x -= movestep
+                if baddie.x < 100:
+                    direction = 'r'
+                    move_down = True
+        print(f'x = {baddie.x}, y = {baddie.y}. dir = {direction}')
+    return direction
 
 def new_baddie(x, y):
     baddie = Actor('christmas_tree')
@@ -43,10 +49,12 @@ def new_baddie(x, y):
     baddie.scale = 0.5
     return baddie
 
+timer = 0
 baddies =[]
 baddie_offset = 100
 baddie_spacing = 70
 direction = 'r'
+move_down = False
 for x in range(5):
     for y in range(4):
         baddies.append(
