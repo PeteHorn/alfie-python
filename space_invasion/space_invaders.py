@@ -12,6 +12,7 @@ def draw():
     screen.blit(BACKGROUND_IMG, (0,0))
     for baddie in baddies:
         baddie.draw()
+    goody.draw()
 
 def update():
     global direction, timer
@@ -41,12 +42,21 @@ def move_baddies():
                     move_down = True
     return direction
 
-def new_baddie(x, y):
-    baddie = Actor('christmas_tree')
+def new_spaceship(x, y, type):
+    baddie = Actor(type)
     baddie.x = x
     baddie.y = y
     baddie.scale = 0.5
     return baddie
+
+def on_mouse_move(pos):
+    goody.angle = goody.angle_to(pos) - 90
+
+def on_mouse_down():
+    laser = Actor('laser')
+    laser.x = goody.x
+    laser.y = goody.y
+
 
 timer = 0
 baddies =[]
@@ -57,8 +67,9 @@ move_down = False
 for x in range(5):
     for y in range(4):
         baddies.append(
-            new_baddie(
+            new_spaceship(
                 baddie_offset + x * baddie_spacing, 
-                baddie_offset + y * baddie_spacing))
-
+                baddie_offset + y * baddie_spacing,
+                'christmas_tree'))
+goody = new_spaceship(WIDTH / 2, HEIGHT - 50, 'christmas_tree_farm')
 pgzrun.go() # Must be last line
