@@ -26,6 +26,10 @@ def update():
         ep = laser['ep']
         if lb.x == ep[0] and lb.y == ep[1]:
             lasers.remove(laser)
+    active_lasers = [laser['laser'] for laser in lasers]
+    for baddie in baddies:
+        if baddie.collidelist(active_lasers) != -1:
+            baddies.remove(baddie)
 
 def move_baddies():
     global direction, move_down
@@ -71,6 +75,7 @@ def on_mouse_down(pos):
         'ep': list(endpoint)
         })
     animate(laser, pos=endpoint)
+    sounds.flashlaser01.play()
 
 
 def calculate_laser_endpoint(mouse_pos):
